@@ -78,6 +78,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
   }
 
   .file-info {
@@ -180,6 +181,39 @@
     background-color: #13b8a8;
     color: #fef6dd;
   }
+  .file-list::after{
+    content: '';
+    display: inline-block;
+    height: 75px;
+  }
+  .bolha{
+    display: flex;
+    width: 50px;
+    height: 50px;
+    background-color: hsl(215, 9%, 58%);
+    padding: 7px;
+    color: white;
+    font-size: 24px;
+    border-radius: 25px;
+    position: fixed;
+    bottom: 85px;
+    top: unset !important;
+    right: 20px;
+    box-shadow: 0px 2px 6px #0006;
+    text-shadow: 0px 1px 4px #0004;
+    z-index: 99998;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .bolhaMenor{ 
+    width: 30px;
+    height: 30px;
+    right: 90px;
+    
+  }
 </style>
 </head>
 <body>
@@ -208,6 +242,14 @@
 
 <div class="file-list" id="file-list">
 
+  {% for pasta in pastas %}
+  <div class="file" onclick="abrirPasta('{{ pasta.path }}')">
+    <div class="file-info">
+      <span class="file-name">{{ pasta.nome }}</span>
+      <span class="file-details">12-01-2024 20:58 • 5 itens</span>
+    </div>
+  </div>
+  {% endfor %}
   <!-- Repetir para outros arquivos -->
 </div>
 
@@ -228,6 +270,13 @@
     <span class="nav-icon"></span>
     Eu
   </div>
+</div>
+
+<div class="bolha bolhaMaior">
+  <img src="{{ url_for('static', filename='camera-add.svg')}}" alt="" style="width: 30px;">
+</div>
+  
+<div class="bolha bolhaMenor">
 </div>
 
 <div id="create-folder-modal" class="modal" style="display: none;">
@@ -252,32 +301,16 @@
     
     // Função para adicionar uma nova pasta à lista
     function addFolder() {
-        var input = document.getElementById('folder-name-input');
-        var name = input.value.trim();
-        if (name) {
-            var list = document.getElementById('file-list');
-            
-            // Criar um novo elemento div
-            var newFile = document.createElement('div');
-            newFile.className = 'file';
-            
-            // Conteúdo interno da div
-            newFile.innerHTML = `
-            <div class="file-info">
-                <span class="file-name">${name}</span>
-                <span class="file-details">12-01-2024 20:58 • 5 itens</span>
-            </div>
-            <div>...</div>
-            `;
-
-            // Adicionar o novo elemento à lista
-            list.appendChild(newFile);
-
-            input.value = ''; // Limpar o campo de entrada
-        }
-        toggleModal(); // Fechar o modal
+    var input = document.getElementById('folder-name-input');
+    var name = input.value.trim();
+    if(name) {
+      // console.log(`/create-folder?name=${name}`)
+        window.location.href = `/create-folder?name=${name}`
+      }
     }
-
+    const abrirPasta = (path) => {
+      window.location.href = `/gerenciador-arquivos/${path}`
+    }
     
     // Event listener para o botão de criar pasta
     document.getElementById('create-folder-btn').addEventListener('click', toggleModal);
