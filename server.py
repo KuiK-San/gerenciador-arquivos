@@ -1,52 +1,99 @@
-from flask import Flask, request, jsonify, render_template, redirect, session
+from flask import Flask, request, jsonify, render_template, redirect, session, send_file, url_for
 import os
 
 app = Flask(__name__)
 
 
-@app.route('/gerenciador-arquivos/', defaults={'path': ''}, methods=['GET'])
+@app.route('/gerenciador-arquivos', defaults={'path': ''}, methods=['GET'])
 @app.route('/gerenciador-arquivos/<path:path>', methods=['GET'])
 def index(path):
-    print(path)
-    if path == '':
-        pastas = os.listdir('./folders')
+    base_path = './static/folders'
+    
+    if os.path.isfile(os.path.join(base_path, path)):
+        # Verifique se o arquivo existe antes de enviar
+        if os.path.exists(os.path.join(base_path, path)):
+            return send_file(os.path.join(base_path, path))
+        else:
+            # Se o arquivo não existir, retorne uma mensagem de erro ou redirecione para a página principal
+            error_message = "O arquivo não existe."
+            session['error'] = error_message
+            return redirect(url_for('index'))
+
+    elif path == '':
+        pastas = os.listdir(base_path)
     else:
-        pastas = os.listdir(f'./folders/{path}')
+        path_to_check = os.path.join(base_path, path)
+        # Verifique se o diretório existe antes de listar suas pastas
+        if os.path.exists(path_to_check) and os.path.isdir(path_to_check):
+            pastas = os.listdir(path_to_check)
+        else:
+            # Se o diretório não existir, retorne uma mensagem de erro ou redirecione para a página principal
+            error_message = "O diretório não existe."
+            session['error'] = error_message
+            return redirect(url_for('index'))
 
     error_message = session.get('error')
     pastasComp = []
 
     for pasta in pastas:
-        pastasComp.append({'nome': pasta, 'path': f'{path}/{pasta}'})
+        if os.path.isfile(os.path.join(base_path, path)):
+            arquivo = True
+        else:
+            arquivo = False
+        pastasComp.append({'nome': pasta, 'path': f'{path}/{pasta}', 'arquivo':arquivo})
 
     if error_message:
         session.pop('error', None)
-        return render_template('gerenciador.html', error_message=error_message)
+        return render_template('gerenciador.html', error_message=error_message, path=path)
     if path == '':
-      return render_template('gerenciador.html', pastas=pastasComp)
-      
+        return render_template('gerenciador.html', pastas=pastasComp, path=path)
 
-    return render_template('gerenciador.html', pastas=pastasComp, enviar=True)
+    return render_template('gerenciador.html', pastas=pastasComp, enviar=True, path=path)
 
 # Rota para criar uma pasta
 @app.route('/create-folder', methods=['GET'])
 def create_folder():
     folder_name = request.args.get('name')
-    print(folder_name)
+    path = request.args.get('path')
     
+    if path != 'undefined':
+        folder_name = os.path.join(path, folder_name)
+
     # Verifica se o nome da pasta foi fornecido
     if not folder_name:
         session['error'] = 'Nome da pasta é necessário'
         return redirect('/')
     
-    # Define o caminho da pasta e cria
-    folder_path = os.path.join('folders', folder_name)
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-    else:
-        session['error'] = 'A pasta já existe'
+    folder_path = os.path.join('static','folders', folder_name)
+
+    try:
+        os.makedirs(folder_path, exist_ok=True)
+    except Exception as e:
+        session['error'] = f'Erro ao criar a pasta: {str(e)}'
+        return redirect('/')
     
-    return redirect('/gerenciador-arquivos')
+    if path == '':
+        return redirect(f'/gerenciador-arquivos')
+
+
+    return redirect(f'/gerenciador-arquivos/{path}')
+
+@app.route('/create-file', methods=['POST'])
+def create_file():
+    if 'file' not in request.files:
+        return 'Nenhum arquivo enviado'
+    
+    file = request.files['file']
+    path = request.form['path']
+
+    if file.filename == '':
+        return 'Arquivos sem nome'
+    
+    file.save(os.path.join('./static/folders', path, file.filename))
+    return redirect(f'/gerenciador-arquivos/{path}')
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

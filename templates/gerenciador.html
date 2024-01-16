@@ -1,337 +1,359 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Layout do Gerenciador de Arquivos</title>
-<style>
-  /* Reset básico */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout do Gerenciador de Arquivos</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  /* Fonte padrão */
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #121212;
-    color: #ffffff;
-  }
+    /* Fonte padrão */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #121212;
+      color: #ffffff;
+    }
 
-  /* Cabeçalho com informações de status e barra de pesquisa */
-  .header {
-    background: #1f1f1f;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    /* Cabeçalho com informações de status e barra de pesquisa */
+    .header {
+      background: #1f1f1f;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-  .status-bar {
-    display: flex;
-    gap: 5px;
-  }
+    .status-bar {
+      display: flex;
+      gap: 5px;
+    }
 
-  .status-bar-item {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    background: #606060;
-  }
+    .status-bar-item {
+      height: 10px;
+      width: 10px;
+      border-radius: 50%;
+      background: #606060;
+    }
 
-  .search-bar {
-    background: #333;
-    border-radius: 10px;
-    padding: 8px 15px;
-    width: 80%;
-    margin: 0 auto;
-  }
+    .search-bar {
+      background: #333;
+      border-radius: 10px;
+      padding: 8px 15px;
+      width: 80%;
+      margin: 0 auto;
+    }
 
-  /* Botões de ação */
-  .action-buttons {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    background: #1f1f1f;
-  }
+    /* Botões de ação */
+    .action-buttons {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      background: #1f1f1f;
+    }
 
-  .button {
-    background: #333;
-    border: none;
-    padding: 10px;
-    border-radius: 10px;
-    color: #fff;
-  }
+    .button {
+      background: #333;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      color: #fff;
+    }
 
-  /* Lista de arquivos */
-  .file-list {
-    margin-top: 20px;
-    padding: 0 10px;
-  }
+    /* Lista de arquivos */
+    .file-list {
+      margin-top: 20px;
+      padding: 0 10px;
+    }
 
-  .file {
-    background: #333;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-  }
+    .file {
+      background: #333;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
 
-  .file-info {
-    display: flex;
-    flex-direction: column;
-  }
+    .file-info {
+      display: flex;
+      flex-direction: column;
+    }
 
-  .file-name {
-    font-weight: bold;
-  }
+    .file-name {
+      font-weight: bold;
+    }
 
-  .file-details {
-    color: #aaa;
-  }
+    .file-details {
+      color: #aaa;
+    }
 
-  /* Barra de navegação inferior */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #1f1f1f;
-    display: flex;
-    justify-content: space-around;
-    padding: 15px 0;
-  }
+    /* Barra de navegação inferior */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #1f1f1f;
+      display: flex;
+      justify-content: space-around;
+      padding: 15px 0;
+    }
 
-  .nav-item {
-    text-align: center;
-  }
+    .nav-item {
+      text-align: center;
+    }
 
-  .nav-icon {
-    display: block;
-    margin: 0 auto;
-    height: 20px;
-    width: 20px;
-    background: #808080;
-    border-radius: 5px;
-  }
+    .nav-icon {
+      display: block;
+      margin: 0 auto;
+      height: 20px;
+      width: 20px;
+      background: #808080;
+      border-radius: 5px;
+    }
+
     /* Estilo do modal */
     .modal {
-    display: none; /* Escondido por padrão */
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Cor de fundo com opacidade */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+      display: none;
+      /* Escondido por padrão */
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      /* Cor de fundo com opacidade */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  /* Caixa de conteúdo do modal */
-  .modal-content {
-    background-color: #2a2a2a;
-    padding: 20px;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 300px;
-  }
+    /* Caixa de conteúdo do modal */
+    .modal-content {
+      background-color: #2a2a2a;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
 
-  .modal-header, .modal-footer {
-    text-align: center;
-    margin-bottom: 10px;
-  }
+    .modal-header,
+    .modal-footer {
+      text-align: center;
+      margin-bottom: 10px;
+    }
 
-  .modal-title {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
+    .modal-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-  /* Campo de entrada para o nome da pasta */
-  .folder-name-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: none;
-    background-color: #333;
-    color: white;
-  }
+    /* Campo de entrada para o nome da pasta */
+    .folder-name-input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      background-color: #333;
+      color: white;
+    }
 
-  /* Botões do modal */
-  .modal-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    margin: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    width: 100px;
-  }
+    /* Botões do modal */
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100px;
+    }
 
-  .cancel-btn {
-    background-color: #777;
-    color: #fef6dd;
-  }
+    .cancel-btn {
+      background-color: #777;
+      color: #fef6dd;
+    }
 
-  .ok-btn {
-    background-color: #13b8a8;
-    color: #fef6dd;
-  }
-  .file-list::after{
-    content: '';
-    display: inline-block;
-    height: 75px;
-  }
-  .bolha{
-    display: flex;
-    width: 50px;
-    height: 50px;
-    background-color: hsl(215, 9%, 58%);
-    padding: 7px;
-    color: white;
-    font-size: 24px;
-    border-radius: 25px;
-    position: fixed;
-    bottom: 85px;
-    top: unset !important;
-    right: 20px;
-    box-shadow: 0px 2px 6px #0006;
-    text-shadow: 0px 1px 4px #0004;
-    z-index: 99998;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    justify-content: center;
-    align-items: center;
-  }
-  .bolhaMenor{ 
-    width: 30px;
-    height: 30px;
-    right: 90px;
-    
-  }
-</style>
+    .ok-btn {
+      background-color: #13b8a8;
+      color: #fef6dd;
+    }
+
+    .file-list::after {
+      content: '';
+      display: inline-block;
+      height: 75px;
+    }
+
+    .bolha {
+      display: flex;
+      width: 50px;
+      height: 50px;
+      background-color: hsl(215, 9%, 58%);
+      padding: 7px;
+      color: white;
+      font-size: 24px;
+      border-radius: 25px;
+      position: fixed;
+      bottom: 40px;
+      top: unset !important;
+      right: 20px;
+      box-shadow: 0px 2px 6px #0006;
+      text-shadow: 0px 1px 4px #0004;
+      z-index: 99998;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bolhaMenor {
+      width: 30px;
+      height: 30px;
+      right: 90px;
+
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="header">
-  <div class="status-bar">
-    <div class="status-bar-item"></div>
-    <div class="status-bar-item"></div>
-    <div class="status-bar-item"></div>
-  </div>
-  <div class="search-bar">Pesquisar</div>
-  <div class="status-bar">
-    <div class="status-bar-item"></div>
-    <div class="status-bar-item"></div>
-  </div>
-</div>
-
-<div class="action-buttons">
-  <button class="button">Imp. Arq.</button>
-  <button class="button">Importar imagens</button>
-  <button class="button" id="create-folder-btn"> 
-    <img src="{{ url_for('static', filename='criarPasta.svg') }}" alt="" srcset="" style="max-width: 40px;">
-    Criar pasta
-    </button>
-</div>
-
-<div class="file-list" id="file-list">
-
-  {% for pasta in pastas %}
-  <div class="file" onclick="abrirPasta('{{ pasta.path }}')">
-    <div class="file-info">
-      <span class="file-name">{{ pasta.nome }}</span>
-      <span class="file-details">12-01-2024 20:58 • 5 itens</span>
+  <div class="header">
+    <div class="status-bar">
+      <div class="status-bar-item"></div>
+      <div class="status-bar-item"></div>
+      <div class="status-bar-item"></div>
+    </div>
+    <div class="search-bar">Pesquisar</div>
+    <div class="status-bar">
+      <div class="status-bar-item"></div>
+      <div class="status-bar-item"></div>
     </div>
   </div>
-  {% endfor %}
-  <!-- Repetir para outros arquivos -->
-</div>
 
-<div class="bottom-nav">
-  <div class="nav-item">
-    <span class="nav-icon"></span>
-    Início
+  <div class="action-buttons">
+    <button class="button">Imp. Arq.</button>
+    <button class="button">Importar imagens</button>
+    <button class="button" id="create-folder-btn">
+      <img src="{{ url_for('static', filename='criarPasta.svg') }}" alt="" srcset="" style="max-width: 40px;">
+      Criar pasta
+    </button>
   </div>
-  <div class="nav-item">
-    <span class="nav-icon"></span>
-    Arquivos
-  </div>
-  <div class="nav-item">
-    <span class="nav-icon"></span>
-    Ferramentas
-  </div>
-  <div class="nav-item">
-    <span class="nav-icon"></span>
-    Eu
-  </div>
-</div>
 
-<div class="bolha bolhaMaior">
-  <img src="{{ url_for('static', filename='camera-add.svg')}}" alt="" style="width: 30px;">
-</div>
-  
-<div class="bolha bolhaMenor">
-</div>
+  <div class="file-list" id="file-list">
+    {% for pasta in pastas %}
+    <div class="file" onclick="abrirPasta('{{ pasta.path }}')">
+      <div class="file-info">
+        <span class="file-name">{{ pasta.nome }}</span>
+        {% if not arquivo %}
+        <span class="file-details">12-01-2024 20:58 • 5 itens</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    <!-- Repetir para outros arquivos -->
+  </div>
+  {% if not enviar %}
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <span class="nav-icon"></span>
+      Início
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"></span>
+      Arquivos
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"></span>
+      Ferramentas
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"></span>
+      Eu
+    </div>
+  </div>
+  {% endif %}
 
-<div id="create-folder-modal" class="modal" style="display: none;">
+  {% if enviar %}
+  <div class="bolha bolhaMaior">
+    <img src="{{ url_for('static', filename='camera-add.svg')}}" alt="" style="width: 30px;">
+  </div>
+
+  <div class="bolha bolhaMenor" id="bolhaMenor">
+  </div>
+  {% endif %}
+
+  <div id="create-folder-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
         <span class="modal-title">Criar pasta</span>
       </div>
-      <input type="text" id="folder-name-input" class="folder-name-input" value="Nova Pasta" placeholder="Nome da pasta">
+      <input type="text" id="folder-name-input" class="folder-name-input" value="Nova Pasta"
+        placeholder="Nome da pasta">
       <div class="modal-footer">
         <button class="modal-btn cancel-btn" onclick="toggleModal('create-folder-modal')">Cancelar</button>
-        <button class="modal-btn ok-btn" onclick="addFolder()">OK</button>
+        <button class="modal-btn ok-btn" onclick="addFolder('{{ path }}')">OK</button>
       </div>
     </div>
-</div>
-<div id="create-file-modal" class="modal" style="display: none;">
+  </div>
+  <div id="create-file-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
-        <span class="modal-title">Criar pasta</span>
+        <span class="modal-title">Adicionar arquivo</span>
       </div>
-      <input type="text" id="folder-name-input" class="folder-name-input" value="Nova Pasta" placeholder="Nome da pasta">
+      <form action="/create-file" method="post" enctype="multipart/form-data">
+        <input type="text" name="path" value="{{path}}" style="display: none;">
+        <input type="file" name="file" accept=".pdf, .txt, .jpg, .jpeg, .png" required>
+        <br>
+        
+      
       <div class="modal-footer">
         <button class="modal-btn cancel-btn" onclick="toggleModal('create-file-modal')">Cancelar</button>
-        <button class="modal-btn ok-btn" onclick="addFolder()">OK</button>
+        <button type="submit" class="modal-btn ok-btn">Enviar</button>
+      </form>
       </div>
     </div>
-</div>
+  </div>
 
-<script>
+  <script>
     // Função para alternar a visibilidade do modal
     function toggleModal(id) {
       var modal = document.getElementById(id);
       modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
     }
-    
+
     // Função para adicionar uma nova pasta à lista
-    function addFolder() {
-    var input = document.getElementById('folder-name-input');
-    var name = input.value.trim();
-    if(name) {
-      // console.log(`/create-folder?name=${name}`)
-        window.location.href = `/create-folder?name=${name}`
+    function addFolder(atualPath) {
+      var input = document.getElementById('folder-name-input');
+      var name = input.value.trim();
+      if (name) {
+        // console.log(atualPath)
+        // console.log(`/create-folder?name=${name}`)
+        window.location.href = `/create-folder?name=${name}&path=${atualPath}`
       }
     }
     const abrirPasta = (path) => {
       window.location.href = `/gerenciador-arquivos/${path}`
     }
-    
+
     // Event listener para o botão de criar pasta
     document.getElementById('create-folder-btn').addEventListener('click', () => {
       toggleModal('create-folder-modal')
     });
     document.getElementById('bolhaMenor').addEventListener('click', () => {
-      toggleModal('create-folder-modal')
+      toggleModal('create-file-modal')
     });
-    </script>
+  </script>
 
 </body>
+
 </html>
