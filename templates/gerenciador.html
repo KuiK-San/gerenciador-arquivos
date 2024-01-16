@@ -286,16 +286,28 @@
       </div>
       <input type="text" id="folder-name-input" class="folder-name-input" value="Nova Pasta" placeholder="Nome da pasta">
       <div class="modal-footer">
-        <button class="modal-btn cancel-btn" onclick="toggleModal()">Cancelar</button>
+        <button class="modal-btn cancel-btn" onclick="toggleModal('create-folder-modal')">Cancelar</button>
         <button class="modal-btn ok-btn" onclick="addFolder()">OK</button>
       </div>
     </div>
-  </div>
+</div>
+<div id="create-file-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">Criar pasta</span>
+      </div>
+      <input type="text" id="folder-name-input" class="folder-name-input" value="Nova Pasta" placeholder="Nome da pasta">
+      <div class="modal-footer">
+        <button class="modal-btn cancel-btn" onclick="toggleModal('create-file-modal')">Cancelar</button>
+        <button class="modal-btn ok-btn" onclick="addFolder()">OK</button>
+      </div>
+    </div>
+</div>
 
 <script>
     // Função para alternar a visibilidade do modal
-    function toggleModal() {
-      var modal = document.getElementById('create-folder-modal');
+    function toggleModal(id) {
+      var modal = document.getElementById(id);
       modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
     }
     
@@ -313,7 +325,12 @@
     }
     
     // Event listener para o botão de criar pasta
-    document.getElementById('create-folder-btn').addEventListener('click', toggleModal);
+    document.getElementById('create-folder-btn').addEventListener('click', () => {
+      toggleModal('create-folder-modal')
+    });
+    document.getElementById('bolhaMenor').addEventListener('click', () => {
+      toggleModal('create-folder-modal')
+    });
     </script>
 
 </body>
