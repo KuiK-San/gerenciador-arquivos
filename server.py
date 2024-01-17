@@ -1,13 +1,22 @@
 from flask import Flask, request, jsonify, render_template, redirect, session, send_file, url_for
 import os
+from datetime import datetime
 
 app = Flask(__name__)
 
+@app.route('/', methods=['GET'])
+def index():
+    return '<a href="/gerenciador-arquivos">Gerenciador de arquvos</a>'
 
 @app.route('/gerenciador-arquivos', defaults={'path': ''}, methods=['GET'])
 @app.route('/gerenciador-arquivos/<path:path>', methods=['GET'])
-def index(path):
-    base_path = './static/folders'
+def gerenciador(path):
+
+    data_max = request.args.get('dataMax', None)
+    data_min = request.args.get('dataMin', None)
+    ordem = request.args.get('ordem', 'A-Z')
+
+    base_path = os.path.join('static', 'folders')
     
     if os.path.isfile(os.path.join(base_path, path)):
         # Verifique se o arquivo existe antes de enviar
@@ -36,11 +45,18 @@ def index(path):
     pastasComp = []
 
     for pasta in pastas:
-        if os.path.isfile(os.path.join(base_path, path)):
-            arquivo = True
+        arquivo = os.path.isfile(os.path.join(base_path, path, pasta))
+
+        if not arquivo:
+            itens = len(os.listdir(os.path.join(base_path, path, pasta)))
         else:
-            arquivo = False
-        pastasComp.append({'nome': pasta, 'path': f'{path}/{pasta}', 'arquivo':arquivo})
+            itens = False
+
+        criacao = os.path.getctime(os.path.join(base_path, path, pasta))
+
+        criacao = datetime.fromtimestamp(criacao).strftime('%Y-%m-%d %H:%M:%S')
+
+        pastasComp.append({'nome': pasta, 'path': f'{path}/{pasta}', 'isFile':arquivo, 'itens': itens, 'criacao': criacao})
 
     if error_message:
         session.pop('error', None)
