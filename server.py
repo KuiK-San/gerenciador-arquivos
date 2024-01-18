@@ -19,11 +19,9 @@ def gerenciador(path):
     base_path = os.path.join('static', 'folders')
     
     if os.path.isfile(os.path.join(base_path, path)):
-        # Verifique se o arquivo existe antes de enviar
         if os.path.exists(os.path.join(base_path, path)):
             return send_file(os.path.join(base_path, path))
         else:
-            # Se o arquivo não existir, retorne uma mensagem de erro ou redirecione para a página principal
             error_message = "O arquivo não existe."
             session['error'] = error_message
             return redirect(url_for('index'))
@@ -32,11 +30,9 @@ def gerenciador(path):
         pastas = os.listdir(base_path)
     else:
         path_to_check = os.path.join(base_path, path)
-        # Verifique se o diretório existe antes de listar suas pastas
         if os.path.exists(path_to_check) and os.path.isdir(path_to_check):
             pastas = os.listdir(path_to_check)
         else:
-            # Se o diretório não existir, retorne uma mensagem de erro ou redirecione para a página principal
             error_message = "O diretório não existe."
             session['error'] = error_message
             return redirect(url_for('index'))
@@ -53,10 +49,19 @@ def gerenciador(path):
             itens = False
 
         criacao = os.path.getctime(os.path.join(base_path, path, pasta))
-
         criacao = datetime.fromtimestamp(criacao).strftime('%Y-%m-%d %H:%M:%S')
 
-        pastasComp.append({'nome': pasta, 'path': f'{path}/{pasta}', 'isFile':arquivo, 'itens': itens, 'criacao': criacao})
+        if (data_min is None or criacao >= data_min) and (data_max is None or criacao <= data_max):
+            pastasComp.append({'nome': pasta, 'path': f'{path}/{pasta}', 'isFile': arquivo, 'itens': itens, 'criacao': criacao})
+
+    if ordem == 'Z-A':
+        pastasComp = sorted(pastasComp, key=lambda x: x['nome'], reverse=True)
+    elif ordem == 'data-asc':
+        pastasComp = sorted(pastasComp, key=lambda x: x['criacao'])
+    elif ordem == 'data-desc':
+        pastasComp = sorted(pastasComp, key=lambda x: x['criacao'], reverse=True)
+    else:
+        pastasComp = sorted(pastasComp, key=lambda x: x['nome'])
 
     if error_message:
         session.pop('error', None)
@@ -65,6 +70,7 @@ def gerenciador(path):
         return render_template('gerenciador.html', pastas=pastasComp, path=path)
 
     return render_template('gerenciador.html', pastas=pastasComp, enviar=True, path=path)
+
 
 # Rota para criar uma pasta
 @app.route('/create-folder', methods=['GET'])
